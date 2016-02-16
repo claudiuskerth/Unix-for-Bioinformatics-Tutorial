@@ -22,6 +22,8 @@ it is itself a powerful tool for the many small bioinformatic tasks that you wil
 
 1.  [Iceberg - making first contact](01-BeforeYouStart.html)
 2.  [Some basics](02-IcebergFirstContact.html)
+3.  [File System](03-FileSystem.html)
+4.  [R markdown](04-DBDA.html)
 
 ## Other Resources
 

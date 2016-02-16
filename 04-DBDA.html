@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="generator" content="pandoc">
+    <title>Software Carpentry: </title>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap-theme.css" />
+    <link rel="stylesheet" type="text/css" href="css/swc.css" />
+    <link rel="alternate" type="application/rss+xml" title="Software Carpentry Blog" href="http://software-carpentry.org/feed.xml"/>
+    <meta charset="UTF-8" />
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body class="lesson">
+    <div class="container card">
+      <div class="banner">
+        <a href="http://software-carpentry.org" title="Software Carpentry">
+          <img alt="Software Carpentry banner" src="img/software-carpentry-banner.png" />
+        </a>
+      </div>
+      <article>
+      <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+                    <h1 class="title"></h1>
+          <h1 id="kruschke---ch.3">Kruschke - ch. 3</h1>
+<h1 id="running-proportions">Running Proportions</h1>
+<pre class="sourceCode r"><code class="sourceCode r">N &lt;-<span class="st"> </span><span class="dv">500</span>
+flipseq &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="dt">x=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="dt">size=</span>N, <span class="dt">replace=</span>T)
+r &lt;-<span class="st"> </span><span class="kw">cumsum</span>(flipseq)
+runprop &lt;-<span class="st"> </span>r/(<span class="dv">1</span>:N)
+<span class="kw">plot</span>(<span class="dv">1</span>:N, runprop, <span class="dt">type=</span><span class="st">&quot;o&quot;</span>, <span class="dt">log=</span><span class="st">&quot;x&quot;</span>, <span class="dt">ylim=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="dt">col=</span><span class="st">&quot;blue&quot;</span>)
+<span class="kw">abline</span>(<span class="dt">h=</span><span class="fl">0.5</span>, <span class="dt">lty=</span><span class="st">&quot;dotted&quot;</span>)
+flipletters &lt;-<span class="st"> </span><span class="kw">paste</span>( <span class="kw">c</span>(<span class="st">&quot;T&quot;</span>, <span class="st">&quot;H&quot;</span>)[flipseq[<span class="dv">1</span>:<span class="dv">10</span>] +<span class="dv">1</span>], <span class="dt">collapse=</span><span class="st">&quot;&quot;</span>)
+displaystring &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;Flip sequence = &quot;</span>, flipletters, <span class="st">&quot;...&quot;</span>, <span class="dt">sep=</span><span class="st">&quot;&quot;</span>)
+<span class="kw">text</span>(<span class="dv">50</span>, <span class="fl">0.8</span>, <span class="dt">labels=</span>displaystring)
+<span class="kw">text</span>(N, <span class="fl">0.2</span>, <span class="co"># coordinates</span>
+     <span class="kw">paste</span>(<span class="st">&quot;End Proportion = &quot;</span>, runprop[N]), <span class="co"># text</span>
+     <span class="dt">adj=</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">0</span>) <span class="co"># right aligned</span>
+     )</code></pre>
+<div class="figure">
+<img src="figure/unnamed-chunk-1-1.png" alt="plot of chunk unnamed-chunk-1" /><p class="caption">plot of chunk unnamed-chunk-1</p>
+</div>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dev.copy2pdf</span>(<span class="dt">file=</span><span class="st">&quot;/Users/Claudius/Dropbox/Kruschke_Dog_Book/RunningPropportion.pdf&quot;</span>)</code></pre>
+<pre><code>## quartz_off_screen 
+##                 2</code></pre>
+<h1 id="haireyecolor">HairEyeColor</h1>
+<h3 id="looking-at-the-data-set">Looking at the data set</h3>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">show</span>( HairEyeColor ) <span class="co"># built-in data set</span></code></pre>
+<pre><code>## Error in eval(expr, envir, enclos): could not find function &quot;show&quot;</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dim</span>( HairEyeColor ) <span class="co"># a 3-dimensional array</span></code></pre>
+<pre><code>## [1] 4 4 2</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dimnames</span>( HairEyeColor )</code></pre>
+<pre><code>## $Hair
+## [1] &quot;Black&quot; &quot;Brown&quot; &quot;Red&quot;   &quot;Blond&quot;
+## 
+## $Eye
+## [1] &quot;Brown&quot; &quot;Blue&quot;  &quot;Hazel&quot; &quot;Green&quot;
+## 
+## $Sex
+## [1] &quot;Male&quot;   &quot;Female&quot;</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">class</span>( HairEyeColor ) <span class="co"># an array of integer values</span></code></pre>
+<pre><code>## [1] &quot;table&quot;</code></pre>
+<h3 id="marginalise-over-sex-and-get-joint-probabilities">Marginalise over sex and get joint probabilities</h3>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># marginalise over the dimension &quot;Sex&quot;</span>
+EyeHairFreq =<span class="st"> </span><span class="kw">apply</span>( <span class="dt">X=</span>HairEyeColor, <span class="dt">MARGIN=</span><span class="kw">c</span>(<span class="st">&quot;Eye&quot;</span>, <span class="st">&quot;Hair&quot;</span>), <span class="dt">FUN=</span>sum ) 
+EyeHairFreq</code></pre>
+<pre><code>##        Hair
+## Eye     Black Brown Red Blond
+##   Brown    68   119  26     7
+##   Blue     20    84  17    94
+##   Hazel    15    54  14    10
+##   Green     5    29  14    16</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">class</span>(EyeHairFreq) <span class="co"># 2-dimensional array, aka matrix</span></code></pre>
+<pre><code>## [1] &quot;matrix&quot;</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sum</span>(EyeHairFreq)</code></pre>
+<pre><code>## [1] 592</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">EyeHairProp =<span class="st"> </span>EyeHairFreq /<span class="st"> </span><span class="kw">sum</span>(EyeHairFreq)
+<span class="kw">round</span>(EyeHairProp, <span class="dv">2</span>) <span class="co"># joint probabilities, as in table 4.1</span></code></pre>
+<pre><code>##        Hair
+## Eye     Black Brown  Red Blond
+##   Brown  0.11  0.20 0.04  0.01
+##   Blue   0.03  0.14 0.03  0.16
+##   Hazel  0.03  0.09 0.02  0.02
+##   Green  0.01  0.05 0.02  0.03</code></pre>
+<h3 id="marginal-probabilities-of-hair-and-eye-color">Marginal probabilities of hair and eye color</h3>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># get marginal probabilities of Hair color</span>
+HairFreq =<span class="st"> </span><span class="kw">apply</span>(<span class="dt">X=</span>HairEyeColor, <span class="dt">MARGIN=</span><span class="kw">c</span>(<span class="st">&quot;Hair&quot;</span>), <span class="dt">FUN=</span>sum) <span class="co"># the MARGIN argument specifies what dimension to keep</span>
+HairProp =<span class="st"> </span>HairFreq /<span class="st"> </span><span class="kw">sum</span>(HairFreq)
+<span class="kw">round</span>(HairProp, <span class="dv">2</span>)</code></pre>
+<pre><code>## Black Brown   Red Blond 
+##  0.18  0.48  0.12  0.21</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># get marginal probabilities of Eye color</span>
+EyeFreq =<span class="st"> </span><span class="kw">apply</span>(<span class="dt">X=</span>HairEyeColor, <span class="dt">MARGIN=</span><span class="kw">c</span>(<span class="st">&quot;Eye&quot;</span>), <span class="dt">FUN=</span>sum)
+EyeProp =<span class="st"> </span>EyeFreq /<span class="st"> </span><span class="kw">sum</span>(EyeFreq)
+<span class="kw">round</span>(EyeProp, <span class="dv">2</span>)</code></pre>
+<pre><code>## Brown  Blue Hazel Green 
+##  0.37  0.36  0.16  0.11</code></pre>
+<h3 id="conditional-probability-of-hair-color-given-blue-eye-color">Conditional probability of hair color given blue eye color</h3>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">round</span>(EyeHairProp, <span class="dv">2</span>)</code></pre>
+<pre><code>##        Hair
+## Eye     Black Brown  Red Blond
+##   Brown  0.11  0.20 0.04  0.01
+##   Blue   0.03  0.14 0.03  0.16
+##   Hazel  0.03  0.09 0.02  0.02
+##   Green  0.01  0.05 0.02  0.03</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># joint probs of Blue Eye color and all Hair colors</span>
+<span class="kw">round</span>(EyeHairProp[<span class="st">&quot;Blue&quot;</span>,], <span class="dv">2</span>)</code></pre>
+<pre><code>## Black Brown   Red Blond 
+##  0.03  0.14  0.03  0.16</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># marginal prob. of blue eye color</span>
+EyeProp[<span class="st">&quot;Blue&quot;</span>]</code></pre>
+<pre><code>##      Blue 
+## 0.3631757</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># conditional prob. of hair colors given eye color is blue</span>
+<span class="kw">round</span>( EyeHairProp[<span class="st">&quot;Blue&quot;</span>,] /<span class="st"> </span>EyeProp[<span class="st">&quot;Blue&quot;</span>], <span class="dv">2</span>)</code></pre>
+<pre><code>## Black Brown   Red Blond 
+##  0.09  0.39  0.08  0.44</code></pre>
+<p><span class="math">\[
+p(Hair* | Eye = Blue) = \frac{p(Hair*, Eye = Blue)}{p(Eye = Blue)}
+\]</span></p>
+<p>Hair* stands for any of the 4 hair colors. The conditional probability of a hair color given blue eye color is the joint probability over the marginal probability of blue eye color, i. e. the proportion of people with blue eyes that also have that specific hair color. With blue eyes the person is clearly much more likely to have blond or brown hair than Black or red. There is clearly a correlation between these two traits, also called linkage disequilibrium.</p>
+<h3 id="what-is-the-probability-of-eye-colors-given-brown-hair">What is the probability of eye colors given brown hair?</h3>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># joint frequencies of eye colors with brown hair</span>
+<span class="kw">round</span>(EyeHairProp[, <span class="st">&quot;Brown&quot;</span>], <span class="dv">2</span>)</code></pre>
+<pre><code>## Brown  Blue Hazel Green 
+##  0.20  0.14  0.09  0.05</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># marginal probability of brown hair</span>
+<span class="kw">round</span>(HairProp[<span class="st">&quot;Brown&quot;</span>], <span class="dv">2</span>)</code></pre>
+<pre><code>## Brown 
+##  0.48</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># conditional probs of eye colors given brown hair</span>
+<span class="kw">round</span>(EyeHairProp[, <span class="st">&quot;Brown&quot;</span>] /<span class="st"> </span>HairProp[<span class="st">&quot;Brown&quot;</span>], <span class="dv">2</span>)</code></pre>
+<pre><code>## Brown  Blue Hazel Green 
+##  0.42  0.29  0.19  0.10</code></pre>
+<p>It looks like people with brown hair are much more likely to have brown eyes than green eyes.</p>
+<h1 id="simulate-running-proportions-of-flipping-a-biases-coin">Simulate running proportions of flipping a biases coin</h1>
+<pre class="sourceCode r"><code class="sourceCode r">N &lt;-<span class="st"> </span><span class="dv">500</span>
+pHead =<span class="st"> </span><span class="fl">0.8</span>
+flipseq &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="dt">x=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="dt">prob=</span><span class="kw">c</span>(<span class="dv">1</span>-pHead, pHead), <span class="dt">size=</span>N, <span class="dt">replace=</span>T) <span class="co"># Head counts as 1, Tail counts as 0</span>
+r &lt;-<span class="st"> </span><span class="kw">cumsum</span>(flipseq)
+runprop &lt;-<span class="st"> </span>r/(<span class="dv">1</span>:N)
+<span class="kw">plot</span>(<span class="dv">1</span>:N, runprop, <span class="dt">type=</span><span class="st">&quot;o&quot;</span>, <span class="dt">log=</span><span class="st">&quot;x&quot;</span>, <span class="dt">ylim=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="dt">col=</span><span class="st">&quot;blue&quot;</span>)
+<span class="kw">abline</span>(<span class="dt">h=</span><span class="fl">0.8</span>, <span class="dt">lty=</span><span class="st">&quot;dotted&quot;</span>)
+flipletters &lt;-<span class="st"> </span><span class="kw">paste</span>( <span class="kw">c</span>(<span class="st">&quot;T&quot;</span>, <span class="st">&quot;H&quot;</span>)[flipseq[<span class="dv">1</span>:<span class="dv">10</span>] +<span class="dv">1</span>], <span class="dt">collapse=</span><span class="st">&quot;&quot;</span>)
+displaystring &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;Flip sequence = &quot;</span>, flipletters, <span class="st">&quot;...&quot;</span>, <span class="dt">sep=</span><span class="st">&quot;&quot;</span>)
+<span class="kw">text</span>(<span class="dv">50</span>, <span class="fl">0.3</span>, <span class="dt">labels=</span>displaystring)
+<span class="kw">text</span>(N, <span class="fl">0.2</span>, <span class="co"># coordinates</span>
+     <span class="kw">paste</span>(<span class="st">&quot;End Proportion = &quot;</span>, runprop[N]), <span class="co"># text</span>
+     <span class="dt">adj=</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">0</span>) <span class="co"># right aligned</span>
+     )</code></pre>
+<div class="figure">
+<img src="figure/unnamed-chunk-7-1.png" alt="plot of chunk unnamed-chunk-7" /><p class="caption">plot of chunk unnamed-chunk-7</p>
+</div>
+<p>For the <code>sample</code> function in <code>R</code> one can give a vector of probabilities to the argument <code>prob</code> of the same length as the vector to sample from. Here, this allows to specify with which probability 0 or 1 are sampled.</p>
+<h1 id="integral-of-density">Integral of Density</h1>
+<h3 id="normal-density">Normal density</h3>
+<pre class="sourceCode r"><code class="sourceCode r">mean &lt;-<span class="st"> </span><span class="dv">0</span>
+sd &lt;-<span class="st"> </span><span class="fl">0.2</span>
+xlow &lt;-<span class="st"> </span>mean -<span class="st"> </span><span class="dv">3</span>*sd
+xhigh &lt;-<span class="st"> </span>mean +<span class="st"> </span><span class="dv">3</span>*sd
+dx &lt;-<span class="st"> </span><span class="fl">0.02</span>
+x &lt;-<span class="st"> </span><span class="kw">seq</span>(xlow, xhigh, <span class="dt">by=</span>dx)
+y &lt;-<span class="st"> </span><span class="dv">1</span>/(sd*<span class="kw">sqrt</span>(<span class="dv">2</span>*pi))*<span class="kw">exp</span>(-<span class="dv">1</span>/<span class="dv">2</span>*(x-mean)^<span class="dv">2</span>/sd^<span class="dv">2</span>)
+<span class="kw">plot</span>(x, y, <span class="dt">type=</span><span class="st">&quot;h&quot;</span>, <span class="dt">lwd=</span><span class="dv">1</span>, <span class="dt">ylab=</span><span class="st">&quot;p(x)&quot;</span>)
+<span class="kw">lines</span>(x, y)
+<span class="co"># approximate integral</span>
+( area &lt;-<span class="st"> </span><span class="kw">sum</span>(y*dx) )</code></pre>
+<pre><code>## [1] 0.9977213</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># add text to plot</span>
+<span class="co"># using function bquote</span>
+<span class="kw">text</span>(-sd, .<span class="dv">9</span>*<span class="kw">max</span>(y), <span class="dt">adj=</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">0</span>), 
+     <span class="dt">labels=</span><span class="kw">bquote</span>( <span class="kw">paste</span>(mu, <span class="st">&quot; = &quot;</span>, .(mean)) )
+     )
+<span class="kw">text</span>(-sd, .<span class="dv">8</span>*<span class="kw">max</span>(y), <span class="dt">adj=</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">0</span>),
+     <span class="dt">labels=</span><span class="kw">bquote</span>( <span class="kw">paste</span>(sigma, <span class="st">&quot; = &quot;</span>, .(sd)) )
+     )
+<span class="kw">text</span>(sd, .<span class="dv">9</span>*<span class="kw">max</span>(y), <span class="dt">adj=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">0</span>),
+     <span class="dt">labels=</span><span class="kw">bquote</span>( <span class="kw">paste</span>(Delta, <span class="st">&quot;x = &quot;</span>, .(dx)) )
+     )
+<span class="kw">text</span>(sd, .<span class="dv">8</span>*<span class="kw">max</span>(y), <span class="dt">adj=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="fl">0.5</span>),
+     <span class="dt">labels=</span><span class="kw">bquote</span>( <span class="kw">paste</span>(<span class="kw">sum</span>(,x,), Delta, <span class="st">&quot;x p(x) = &quot;</span>, .(<span class="kw">round</span>(area, <span class="dv">3</span>))) )
+     )</code></pre>
+<div class="figure">
+<img src="figure/unnamed-chunk-8-1.png" alt="plot of chunk unnamed-chunk-8" /><p class="caption">plot of chunk unnamed-chunk-8</p>
+</div>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co">#dev.copy2pdf(file=&quot;/Users/Claudius/Dropbox/Kruschke_Dog_Book/IntegralOfDensity.pdf&quot;)</span></code></pre>
+<h3 id="a-new-prob-density-function-6x1-x-defined-over-the-range-0-1">A new prob density function <span class="math">\(6x(1-x)\)</span> defined over the range [0, 1]</h3>
+<p>Plot probability density function.</p>
+<pre class="sourceCode r"><code class="sourceCode r">xlow =<span class="st"> </span><span class="dv">0</span>
+xhigh =<span class="st"> </span><span class="dv">1</span>
+dx =<span class="st"> </span><span class="dv">1</span>/<span class="dv">1000</span>
+x =<span class="st"> </span><span class="kw">seq</span>(<span class="dt">from=</span><span class="dv">0</span>, <span class="dt">to=</span><span class="dv">1</span>, <span class="dt">by=</span>dx)
+y =<span class="st"> </span><span class="dv">6</span>*x*(<span class="dv">1</span>-x)
+<span class="kw">plot</span>(x, y, <span class="dt">type=</span><span class="st">&quot;l&quot;</span>, <span class="dt">xlab=</span><span class="st">&quot;x&quot;</span>, <span class="dt">ylab=</span><span class="st">&quot;prob. density&quot;</span>)
+<span class="kw">lines</span>(x, y, <span class="dt">type=</span><span class="st">&quot;h&quot;</span>, <span class="dt">col=</span><span class="st">&quot;grey&quot;</span>)</code></pre>
+<div class="figure">
+<img src="figure/unnamed-chunk-9-1.png" alt="plot of chunk unnamed-chunk-9" /><p class="caption">plot of chunk unnamed-chunk-9</p>
+</div>
+<p>Approximate the integral of the function over the range [0, 1].</p>
+<pre class="sourceCode r"><code class="sourceCode r">approx_integral =<span class="st"> </span><span class="kw">sum</span>( dx *<span class="st"> </span>y )
+<span class="kw">round</span>(approx_integral, <span class="dv">2</span>)</code></pre>
+<pre><code>## [1] 1</code></pre>
+<p>Get the mean and standard deviation of the function.</p>
+<p>The mean can be calculated as in equation 4.7. It can also be approximated by splitting the continuous distribution of <code>x</code> into many intervals (as done above) and then using the probability that x falls into an interval as a weight for each <code>x</code>. This is done in the following:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># prob. density &#39;y&#39; needs to be converted to a probability by multiplying it </span>
+<span class="co"># with the interval width</span>
+mu =<span class="st"> </span><span class="kw">sum</span>( y*dx *<span class="st"> </span>x ) <span class="co"># see equation 4.5</span>
+mu</code></pre>
+<pre><code>## [1] 0.4999995</code></pre>
+<p>The same principal can be used to approximate the variance of this distribution:</p>
+<p><span class="math">\[
+\begin{align}
+var(x) &amp;= \int_{0}^{1} dx \quad p(x) [x-\mu]^{2} \\[5pt]
+var(x) &amp;= \int_{0}^{1} dx \quad 6x(1-x)[x-0.5]^{2} \\[5pt]
+&amp;= 0.05
+\end{align}
+\]</span></p>
+<pre class="sourceCode r"><code class="sourceCode r">var_x =<span class="st"> </span><span class="kw">sum</span>( y*dx *<span class="st"> </span>(x-mu)^<span class="dv">2</span> )
+var_x</code></pre>
+<pre><code>## [1] 0.04999975</code></pre>
+<p>Now, let’s annotate the graph of the probability density with the values of its mean and standard deviation:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(x, y, <span class="dt">type=</span><span class="st">&quot;l&quot;</span>, <span class="dt">xlab=</span><span class="st">&quot;x&quot;</span>, <span class="dt">ylab=</span><span class="st">&quot;prob. density&quot;</span>)
+
+label =<span class="st"> </span><span class="kw">bquote</span>( <span class="kw">paste</span>( mu, <span class="st">&quot; = &quot;</span>, .(<span class="kw">round</span>(mu, <span class="dv">1</span>)) ) )
+<span class="kw">text</span>(<span class="dv">0</span>, <span class="fl">1.4</span>, label, <span class="dt">pos=</span><span class="dv">4</span>)
+label =<span class="st"> </span><span class="kw">bquote</span>( <span class="kw">paste</span>( sigma, <span class="st">&quot; = &quot;</span>, .(<span class="kw">round</span>(<span class="kw">sqrt</span>(var_x), <span class="dv">2</span>)) ) )
+<span class="kw">text</span>(<span class="fl">0.8</span>, <span class="fl">1.4</span>, label, <span class="dt">pos=</span><span class="dv">4</span>)</code></pre>
+<div class="figure">
+<img src="figure/unnamed-chunk-13-1.png" alt="plot of chunk unnamed-chunk-13" /><p class="caption">plot of chunk unnamed-chunk-13</p>
+</div>
+<h1 id="exercise-3.1">Exercise 3.1</h1>
+<pre class="sourceCode r"><code class="sourceCode r">N &lt;-<span class="st"> </span><span class="dv">500</span>
+flipseq &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="dt">x=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="dt">prob=</span><span class="kw">c</span>(<span class="fl">0.8</span>, <span class="fl">0.2</span>), <span class="dt">size=</span>N, <span class="dt">replace=</span>T)
+r &lt;-<span class="st"> </span><span class="kw">cumsum</span>(flipseq)
+runprop &lt;-<span class="st"> </span>r/(<span class="dv">1</span>:N)
+<span class="kw">plot</span>(<span class="dv">1</span>:N, runprop, <span class="dt">type=</span><span class="st">&quot;o&quot;</span>, <span class="dt">log=</span><span class="st">&quot;x&quot;</span>, <span class="dt">ylim=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="dt">col=</span><span class="st">&quot;blue&quot;</span>)
+<span class="kw">abline</span>(<span class="dt">a=</span><span class="fl">0.2</span>, <span class="dt">b=</span><span class="dv">0</span>, <span class="dt">lty=</span><span class="dv">3</span>)
+flipletters &lt;-<span class="st"> </span><span class="kw">paste</span>( <span class="kw">c</span>(<span class="st">&quot;T&quot;</span>, <span class="st">&quot;H&quot;</span>)[flipseq[<span class="dv">1</span>:<span class="dv">10</span>] +<span class="dv">1</span>], <span class="dt">collapse=</span><span class="st">&quot;&quot;</span>)
+displaystring &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;Flip sequence = &quot;</span>, flipletters, <span class="st">&quot;...&quot;</span>, <span class="dt">sep=</span><span class="st">&quot;&quot;</span>)
+<span class="kw">text</span>(<span class="dv">50</span>, <span class="fl">0.8</span>, <span class="dt">labels=</span>displaystring)
+<span class="kw">text</span>(N, <span class="fl">0.5</span>, <span class="co"># coordinates</span>
+     <span class="kw">paste</span>(<span class="st">&quot;End Proportion = &quot;</span>, runprop[N]), <span class="co"># text</span>
+     <span class="dt">adj=</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">0</span>) <span class="co"># right aligned</span>
+     )</code></pre>
+<div class="figure">
+<img src="figure/unnamed-chunk-14-1.png" alt="plot of chunk unnamed-chunk-14" /><p class="caption">plot of chunk unnamed-chunk-14</p>
+</div>
+<h1 id="exercise-3.3">Exercise 3.3</h1>
+<h2 id="a">(A)</h2>
+<pre class="sourceCode r"><code class="sourceCode r">dx &lt;-<span class="st"> </span><span class="fl">0.02</span>
+x &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dt">from=</span><span class="dv">0</span>, <span class="dt">to=</span><span class="dv">1</span>, <span class="dt">by=</span>dx)
+y &lt;-<span class="st"> </span><span class="dv">6</span>*x*(<span class="dv">1</span>-x)
+<span class="kw">plot</span>(x, y, <span class="dt">type=</span><span class="st">&quot;h&quot;</span>, <span class="dt">ylab=</span><span class="st">&quot;p(x)&quot;</span>, <span class="dt">xlim=</span><span class="kw">c</span>(-.<span class="dv">4</span>, <span class="fl">1.2</span>))
+<span class="kw">lines</span>(x,y)
+( area &lt;-<span class="st"> </span><span class="kw">sum</span>(dx *<span class="st"> </span>y) )</code></pre>
+<pre><code>## [1] 0.9996</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># add text to plot</span>
+<span class="kw">text</span>(-.<span class="dv">4</span>, .<span class="dv">9</span>*<span class="kw">max</span>(y), <span class="dt">adj=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">1</span>),
+     <span class="dt">labels=</span><span class="kw">bquote</span>(<span class="kw">paste</span>(Delta, <span class="st">&quot;x = &quot;</span>, .(dx)))
+     )
+<span class="kw">text</span>(-.<span class="dv">4</span>, .<span class="dv">8</span>*<span class="kw">max</span>(y), <span class="dt">adj=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">1</span>),
+     <span class="dt">labels=</span><span class="kw">bquote</span>( <span class="kw">paste</span>(<span class="kw">sum</span>(,x,), Delta, <span class="st">&quot;x p(x) = &quot;</span>, .(<span class="kw">round</span>(area,<span class="dv">3</span>))) )
+       )</code></pre>
+<div class="figure">
+<img src="figure/unnamed-chunk-15-1.png" alt="plot of chunk unnamed-chunk-15" /><p class="caption">plot of chunk unnamed-chunk-15</p>
+</div>
+<h2 id="b">(B)</h2>
+<p><span class="math">\[
+\begin{align}
+&amp; \int_{0}^{1} 6x(1-x) dx \\[5pt]
+&amp;= 6 \int_{0}^{1} x(1-x) dx \\[5pt]
+&amp;= 6 \int_{0}^{1} x-x^2 dx \\[5pt]
+&amp;= 6\left[\frac{1}{2}x^{2} - \frac{1}{3}x^{3}\right]_{0}^{1} \\[5pt]
+&amp;= 6\left[\frac{1}{2} - \frac{1}{3} \right] \\[5pt]
+&amp;= \frac{6}{2} - \frac{6}{3} \\[5pt]
+&amp;= 3 - 2 \\[5pt]
+&amp;= 1
+\end{align}
+\]</span></p>
+<h1 id="exercise-4.5">Exercise 4.5</h1>
+<h2 id="a-probability-under-normal-curve-between-mu-sigma-and-musigma">(A) Probability under normal curve between <span class="math">\(\mu-\sigma\)</span> and <span class="math">\(\mu+\sigma\)</span></h2>
+<pre class="sourceCode r"><code class="sourceCode r">mean &lt;-<span class="st"> </span><span class="dv">0</span>
+sd &lt;-<span class="st"> </span><span class="fl">0.2</span>
+xlow &lt;-<span class="st"> </span>mean -<span class="st"> </span><span class="dv">3</span>*sd
+xhigh &lt;-<span class="st"> </span>mean +<span class="st"> </span><span class="dv">3</span>*sd
+dx &lt;-<span class="st"> </span><span class="dv">1</span>/<span class="dv">1000</span>
+x &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dt">from=</span>xlow, <span class="dt">to=</span>xhigh, <span class="dt">by=</span>dx)
+y &lt;-<span class="st"> </span><span class="dv">1</span>/(sd*<span class="kw">sqrt</span>(<span class="dv">2</span>*pi))*<span class="kw">exp</span>(-<span class="dv">1</span>/<span class="dv">2</span>*(x-mean)^<span class="dv">2</span>/sd^<span class="dv">2</span>)
+index &lt;-<span class="st"> </span>(x &gt;=<span class="st"> </span>-sd) &amp;<span class="st"> </span>(x &lt;=<span class="st"> </span>sd)
+<span class="kw">plot</span>(x[index], y[index], 
+     <span class="dt">type=</span><span class="st">&quot;h&quot;</span>, <span class="dt">col=</span><span class="st">&quot;grey&quot;</span>,
+     <span class="dt">ylab=</span><span class="st">&quot;p(x)&quot;</span>,
+     <span class="dt">xlab=</span><span class="st">&quot;x&quot;</span>,
+     <span class="dt">xlim=</span><span class="kw">c</span>(mean<span class="dv">-3</span>*sd, mean<span class="dv">+3</span>*sd),
+     <span class="dt">ylim=</span><span class="kw">c</span>(<span class="dv">0</span>, <span class="fl">1.1</span>*<span class="kw">max</span>(y))
+     )
+<span class="kw">lines</span>(x,y)
+<span class="co"># approx. area by grid</span>
+( area &lt;-<span class="st"> </span><span class="kw">sum</span>(y[index] *<span class="st"> </span>dx) )</code></pre>
+<pre><code>## [1] 0.6826885</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># exact area</span>
+( <span class="kw">pnorm</span>(sd, <span class="dt">mean=</span><span class="dv">0</span>, <span class="dt">sd=</span>sd) -<span class="st"> </span><span class="kw">pnorm</span>(-sd, <span class="dt">mean=</span><span class="dv">0</span>, <span class="dt">sd=</span>sd) )</code></pre>
+<pre><code>## [1] 0.6826895</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># add text to plot</span>
+<span class="kw">text</span>(-.<span class="dv">6</span>, <span class="dv">2</span>, <span class="dt">adj=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">0</span>),
+     <span class="dt">labels=</span><span class="kw">bquote</span>(<span class="kw">paste</span>(Delta, <span class="st">&quot;x = &quot;</span>, .(dx)))
+     )
+<span class="kw">text</span>(-.<span class="dv">6</span>, <span class="fl">1.8</span>, <span class="dt">adj=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">1</span>),
+     <span class="dt">labels=</span><span class="kw">bquote</span>(
+             <span class="kw">paste</span>(
+                     <span class="kw">sum</span>(, <span class="dt">x=</span>-sigma, <span class="dt">x=</span>sigma), 
+                     Delta, <span class="st">&quot;x p(x) = &quot;</span>, 
+                     .(<span class="kw">round</span>(area,<span class="dv">3</span>))
+                     )
+             )
+)</code></pre>
+<div class="figure">
+<img src="figure/unnamed-chunk-16-1.png" alt="plot of chunk unnamed-chunk-16" /><p class="caption">plot of chunk unnamed-chunk-16</p>
+</div>
+<p>In a normal distribution, about 68% of the probability mass lies within one standard deviation around the mean.</p>
+<h2 id="b-1">(B)</h2>
+<pre class="sourceCode r"><code class="sourceCode r">mean &lt;-<span class="st"> </span><span class="dv">162</span>
+sd &lt;-<span class="st"> </span><span class="dv">177</span> -<span class="st"> </span><span class="dv">162</span>
+<span class="kw">curve</span>(<span class="kw">dnorm</span>(x, mean, sd), <span class="dt">from=</span><span class="dv">162-3</span>*sd, <span class="dt">to=</span><span class="dv">162+3</span>*sd, <span class="dt">ylab=</span><span class="st">&quot;p(x)&quot;</span>)
+<span class="kw">abline</span>(<span class="dt">v=</span><span class="kw">c</span>(<span class="dv">147</span>, <span class="dv">177</span>), <span class="dt">lty=</span><span class="dv">3</span>)</code></pre>
+<div class="figure">
+<img src="figure/unnamed-chunk-17-1.png" alt="plot of chunk unnamed-chunk-17" /><p class="caption">plot of chunk unnamed-chunk-17</p>
+</div>
+<h1 id="exercise-4.6">Exercise 4.6</h1>
+<h3 id="food-preferences-among-school-children-of-different-ages">Food preferences among school children of different ages</h3>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># get the conditional probs into a matrix</span>
+cond.prob &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">c</span>(<span class="fl">0.3</span>,.<span class="dv">6</span>,.<span class="dv">3</span>,.<span class="dv">6</span>,.<span class="dv">3</span>,.<span class="dv">1</span>,.<span class="dv">1</span>,.<span class="dv">1</span>,.<span class="dv">6</span>), 
+              <span class="dt">nrow=</span><span class="dv">3</span>, <span class="dt">ncol=</span><span class="dv">3</span>, 
+               <span class="dt">dimnames=</span><span class="kw">list</span>(<span class="kw">c</span>(<span class="st">&quot;1st graders&quot;</span>, <span class="st">&quot;2nd graders&quot;</span>, <span class="st">&quot;3rd graders&quot;</span>), <span class="kw">c</span>(<span class="st">&quot;Ice Cream&quot;</span>, <span class="st">&quot;Fruit&quot;</span>, <span class="st">&quot;French Fries&quot;</span>)))
+cond.prob</code></pre>
+<pre><code>##             Ice Cream Fruit French Fries
+## 1st graders       0.3   0.6          0.1
+## 2nd graders       0.6   0.3          0.1
+## 3rd graders       0.3   0.1          0.6</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># get grade probs</span>
+grade.prob &lt;-<span class="st"> </span><span class="kw">c</span>(.<span class="dv">2</span>, .<span class="dv">2</span>, .<span class="dv">6</span>)
+<span class="co"># multiply conditional prob by grade prob</span>
+<span class="co"># to get the conjoint prob of grade and food</span>
+( conjoint.prob &lt;-<span class="st"> </span>cond.prob *<span class="st"> </span>grade.prob )</code></pre>
+<pre><code>##             Ice Cream Fruit French Fries
+## 1st graders      0.06  0.12         0.02
+## 2nd graders      0.12  0.06         0.02
+## 3rd graders      0.18  0.06         0.36</code></pre>
+<p>If grade and food were independent, then the conjoint probabilities would be the same as the product of the two marginal probabilities for food and grade.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># marginal probabilities of the food</span>
+( marg.food &lt;-<span class="st"> </span><span class="kw">colSums</span>(conjoint.prob) )</code></pre>
+<pre><code>##    Ice Cream        Fruit French Fries 
+##         0.36         0.24         0.40</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># marginal probabilities of the grade</span>
+<span class="co"># must be the same as grade.prob</span>
+( marg.grade &lt;-<span class="st"> </span><span class="kw">rowSums</span>(conjoint.prob) )</code></pre>
+<pre><code>## 1st graders 2nd graders 3rd graders 
+##         0.2         0.2         0.6</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">conjoint.prob</code></pre>
+<pre><code>##             Ice Cream Fruit French Fries
+## 1st graders      0.06  0.12         0.02
+## 2nd graders      0.12  0.06         0.02
+## 3rd graders      0.18  0.06         0.36</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># get cross product of marginal probabilities</span>
+( indep.joint.prob &lt;-<span class="st"> </span><span class="kw">outer</span>(marg.grade, marg.food) )</code></pre>
+<pre><code>##             Ice Cream Fruit French Fries
+## 1st graders     0.072 0.048         0.08
+## 2nd graders     0.072 0.048         0.08
+## 3rd graders     0.216 0.144         0.24</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co">#class(marg.grade)</span>
+<span class="co">#class(t(as.vector(marg.food)))</span>
+<span class="co">#( indep.joint.prob &lt;- as.vector(marg.grade) %*% t(as.vector(marg.food)) )</span>
+<span class="co"># get the difference between the joint probs. assuming independence of</span>
+<span class="co"># grade and food preference and the observed joint probs</span>
+( indep.joint.prob -<span class="st"> </span>conjoint.prob )</code></pre>
+<pre><code>##             Ice Cream  Fruit French Fries
+## 1st graders     0.012 -0.072         0.06
+## 2nd graders    -0.048 -0.012         0.06
+## 3rd graders     0.036  0.084        -0.12</code></pre>
+<p>The table of conjoint probabilities cannot be reconstructed by multiplying grade and food probabilities, hence food and grade are not independent.</p>
+        </div>
+      </div>
+      </article>
+      <div class="footer">
+        <a class="label swc-blue-bg" href="http://software-carpentry.org">Software Carpentry</a>
+        <a class="label swc-blue-bg" href="https://github.com/claudiuskerth/Unix-for-Bioinformatics-Tutorial">Source</a>
+        <a class="label swc-blue-bg" href="mailto:admin@software-carpentry.org">Contact</a>
+        <a class="label swc-blue-bg" href="LICENSE.html">License</a>
+      </div>
+    </div>
+    <!-- Javascript placed at the end of the document so the pages load faster -->
+    <script src="http://software-carpentry.org/v5/js/jquery-1.9.1.min.js"></script>
+    <script src="css/bootstrap/bootstrap-js/bootstrap.js"></script>
+    <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+  </body>
+</html>
