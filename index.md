@@ -24,6 +24,7 @@ it is itself a powerful tool for the many small bioinformatic tasks that you wil
 2.  [Some basics](02-IcebergFirstContact.html)
 3.  [File System](03-FileSystem.html)
 4.  [R markdown](04-DBDA.html)
+5.  [iPython notebook](05-Curve_Fitting.html)
 
 ## Other Resources
 
