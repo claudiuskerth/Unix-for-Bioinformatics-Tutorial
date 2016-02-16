@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="generator" content="pandoc">
+    <title>Software Carpentry: </title>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap-theme.css" />
+    <link rel="stylesheet" type="text/css" href="css/swc.css" />
+    <link rel="alternate" type="application/rss+xml" title="Software Carpentry Blog" href="http://software-carpentry.org/feed.xml"/>
+    <meta charset="UTF-8" />
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body class="lesson">
+    <div class="container card">
+      <div class="banner">
+        <a href="http://software-carpentry.org" title="Software Carpentry">
+          <img alt="Software Carpentry banner" src="img/software-carpentry-banner.png" />
+        </a>
+      </div>
+      <article>
+      <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+                    <h1 class="title"></h1>
+          <pre class="sourceCode python"><code class="sourceCode python"><span class="fl">0.15</span> * <span class="fl">9.81</span> / <span class="fl">0.1015</span></code></pre>
+<pre><code>14.497536945812808</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="ch">import</span> pylab, random</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="kw">def</span> getData(filename):
+    distances = []
+    masses = []
+    <span class="kw">with</span> <span class="dt">open</span>(filename, <span class="st">&#39;r&#39;</span>) <span class="ch">as</span> dataFile:
+        dataFile.readline() <span class="co"># discard header line</span>
+        <span class="kw">for</span> line in dataFile:
+            dist, mass = line.split()
+            distances.append( <span class="dt">float</span>(dist) )
+            masses.append( <span class="dt">float</span>(mass) )
+    <span class="kw">return</span> masses, distances</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="kw">def</span> plotData(filename):
+    xVals, yVals = getData(filename)
+    xVals = pylab.array(xVals) <span class="co"># vectorise</span>
+    yVals = pylab.array(yVals) <span class="co"># vectorise</span>
+    xVals = xVals * <span class="fl">9.81</span> <span class="co"># convert mass to Newtons by multiplying with gravitational constant</span>
+    pylab.plot(xVals, yVals, <span class="st">&#39;bo&#39;</span>, label=<span class="st">&#39;Measured displacements&#39;</span>)
+    pylab.title(<span class="st">&#39;Measured Displacement of Spring&#39;</span>)
+    pylab.xlabel(<span class="st">&#39;Force (Newtons)&#39;</span>)
+    pylab.ylabel(<span class="st">&#39;Distance (meters)&#39;</span>)</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python">filename = <span class="st">&#39;../springData.txt&#39;</span></code></pre>
+<pre class="sourceCode python"><code class="sourceCode python">plotData(filename)
+pylab.show()</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="kw">def</span> testErrors(nTrials=<span class="dv">100</span>, sample_size=<span class="dv">100</span>, error_dist=<span class="st">&#39;random.triangular(-1,1)&#39;</span>):
+    <span class="co">&quot;&quot;&quot;</span>
+<span class="co">    Simulates the sum of random effects.</span>
+<span class="co">    </span>
+<span class="co">    Samples &#39;sample_size&#39; random effects from the &#39;error_dist&#39; and sums them up.</span>
+<span class="co">    Repeats this &#39;nTrials&#39; times and plots the distribution of sampled errors and</span>
+<span class="co">    the distribution of the sum of sampled errors from each trial.</span>
+<span class="co">    &quot;&quot;&quot;</span>
+    sumsOfErrors = [<span class="dv">0</span>] * nTrials
+    Errors = [<span class="dv">0</span>] * nTrials * sample_size
+    <span class="kw">for</span> t in <span class="dt">xrange</span>(nTrials):
+        <span class="kw">for</span> s in <span class="dt">xrange</span>(sample_size):
+            error = <span class="dt">eval</span>(error_dist)
+            sumsOfErrors[t] += error
+            Errors[t*sample_size + s] = error
+    pylab.figure()
+    pylab.hist(Errors, bins=<span class="dv">50</span>)
+    pylab.title(<span class="st">&#39;Distribution of errors from &#39;</span> + error_dist)
+    pylab.xlabel(<span class="st">&#39;error&#39;</span>)
+    pylab.ylabel(<span class="st">&#39;frequency&#39;</span>)
+    pylab.figure()
+    pylab.hist(sumsOfErrors, bins=<span class="dv">50</span>)
+    pylab.title(<span class="st">&#39;Sum of 100 random points from &#39;</span> + error_dist + <span class="st">&#39; (&#39;</span> + <span class="dt">str</span>(nTrials) + <span class="st">&#39; Trials)&#39;</span>)
+    pylab.xlabel(<span class="st">&#39;Sum&#39;</span>)
+    pylab.ylabel(<span class="st">&#39;Number of trials&#39;</span>)</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python">l = [<span class="dv">0</span>] * <span class="dv">10</span> * <span class="dv">10</span>
+<span class="dt">print</span> l
+<span class="kw">for</span> i in <span class="dt">range</span>(<span class="dv">10</span>):
+    <span class="kw">for</span> j in <span class="dt">range</span>(<span class="dv">10</span>):
+        l[i*<span class="dv">10</span>+j] = <span class="dv">1</span>
+<span class="dt">print</span> l</code></pre>
+<pre><code>[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python">%matplotlib inline</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python">testErrors(nTrials=<span class="dv">10000</span>)
+pylab.show()</code></pre>
+<div class="figure">
+<img src="figure/output_9_0.png" alt="png" /><p class="caption">png</p>
+</div>
+<div class="figure">
+<img src="figure/output_9_1.png" alt="png" /><p class="caption">png</p>
+</div>
+<pre class="sourceCode python"><code class="sourceCode python">testErrors(nTrials=<span class="dv">10000</span>, error_dist=<span class="st">&#39;random.uniform(-1,1)&#39;</span>)
+pylab.show()</code></pre>
+<div class="figure">
+<img src="figure/output_10_0.png" alt="png" /><p class="caption">png</p>
+</div>
+<div class="figure">
+<img src="figure/output_10_1.png" alt="png" /><p class="caption">png</p>
+</div>
+<pre class="sourceCode python"><code class="sourceCode python">testErrors(nTrials=<span class="dv">10000</span>, error_dist=<span class="st">&#39;random.gammavariate(alpha=3,beta=30)&#39;</span>)
+pylab.show()</code></pre>
+<div class="figure">
+<img src="figure/output_11_0.png" alt="png" /><p class="caption">png</p>
+</div>
+<div class="figure">
+<img src="figure/output_11_1.png" alt="png" /><p class="caption">png</p>
+</div>
+<pre class="sourceCode python"><code class="sourceCode python">testErrors(nTrials=<span class="dv">10000</span>, error_dist=<span class="st">&#39;random.lognormvariate(mu=0, sigma=1)&#39;</span>)
+pylab.show()</code></pre>
+<div class="figure">
+<img src="figure/output_12_0.png" alt="png" /><p class="caption">png</p>
+</div>
+<div class="figure">
+<img src="figure/output_12_1.png" alt="png" /><p class="caption">png</p>
+</div>
+<p>The sum of random errors, no matter what their distribution, seems to converge to a normal distribution.</p>
+<pre class="sourceCode python"><code class="sourceCode python">a = [<span class="dv">0</span>] * <span class="dv">1000</span>
+b = [<span class="dv">0</span>] * <span class="dv">1000</span>
+<span class="kw">for</span> i in <span class="dt">range</span>(<span class="dv">1000</span>):
+    a[i] = random.gauss(mu=<span class="dv">0</span>, sigma=<span class="dv">3</span>)
+    b[i] = random.gauss(mu=<span class="dv">0</span>, sigma=<span class="dv">5</span>)
+pylab.figure()
+pylab.hist(a, bins=<span class="dv">10</span>)
+pylab.figure()
+pylab.hist(b, bins=<span class="dv">10</span>)
+pylab.show()</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="dv">216</span>/<span class="fl">8.0</span></code></pre>
+<pre><code>27.0</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="ch">import</span> random, pylab</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="kw">def</span> testHashFunc(N):
+    l = []
+    <span class="kw">for</span> _ in <span class="dt">range</span>(N):
+        l.extend([random.randint(<span class="dv">0</span>,<span class="dv">99</span>) % <span class="dv">10</span> <span class="kw">for</span> _ in <span class="dt">range</span>(<span class="dv">100</span>)])
+    pylab.hist(l, bins=<span class="dv">10</span>)
+    pylab.title(<span class="st">&#39;N = &#39;</span> + <span class="dt">str</span>(N))
+    pylab.show()</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python">testHashFunc(<span class="dv">10</span>)
+testHashFunc(<span class="dv">100</span>)
+testHashFunc(<span class="dv">1000</span>)</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python">xVals = []
+yVals = []
+wVals = []
+<span class="kw">for</span> i in <span class="dt">range</span>(<span class="dv">1000</span>):
+    xVals.append(random.random())
+    yVals.append(random.random())
+    wVals.append(random.random())
+xVals = pylab.array(xVals)
+yVals = pylab.array(yVals)
+wVals = pylab.array(wVals)
+xVals = xVals + xVals
+zVals = xVals + yVals
+tVals = xVals + yVals + wVals</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python">pylab.hist(tVals, bins=<span class="dv">15</span>)
+pylab.show()</code></pre>
+<p>The sum of random numbers is normally distributed!</p>
+<pre class="sourceCode python"><code class="sourceCode python">pylab.hist(xVals, bins=<span class="dv">15</span>)
+pylab.show()</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python">pylab.plot(xVals, zVals)
+pylab.show()</code></pre>
+<p>Although the <code>zVals</code> are normally distributed they are positively correlated with the <code>xVals</code>.</p>
+<pre class="sourceCode python"><code class="sourceCode python">pylab.plot(xVals, yVals)
+pylab.show()</code></pre>
+<p>Both <code>xVals</code> and <code>yVals</code> are uniformly distributed.</p>
+<pre class="sourceCode python"><code class="sourceCode python">pylab.plot(xVals, <span class="dt">sorted</span>(yVals))
+pylab.show()</code></pre>
+<h3 id="fix-the-backend-of-matplotlib-to-allow-figures-to-show-up">Fix the backend of matplotlib to allow figures to show up</h3>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="ch">import</span> matplotlib
+<span class="dt">print</span> matplotlib.matplotlib_fname()</code></pre>
+<pre><code>/Users/Claudius/anaconda/lib/python2.7/site-packages/matplotlib/mpl-data/matplotlibrc</code></pre>
+<p>backend : qt2agg</p>
+<h3 id="fiiting-a-curve-to-data">Fiiting a Curve to data</h3>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="kw">def</span> fitData(fileName):
+    <span class="co">&quot;&quot;&quot;</span>
+<span class="co">    Uses pylab&#39;s &#39;polyfit&#39; function to fit a straight line to the data,</span>
+<span class="co">    i. e. to do a linear regression</span>
+<span class="co">    &quot;&quot;&quot;</span>
+    xVals, yVals = getData(fileName)
+    xVals = pylab.array(xVals)
+    yVals = pylab.array(yVals)
+    xVals = xVals*<span class="fl">9.81</span>  <span class="co"># convert mass to force (F = mg)</span>
+    pylab.plot(xVals, yVals, <span class="st">&#39;bo&#39;</span>, label = <span class="st">&#39;Measured points&#39;</span>)
+    pylab.title(<span class="st">&#39;Measured Displacement of Spring&#39;</span>)
+    pylab.xlabel(<span class="st">&#39;Force (Newtons)&#39;</span>)
+    pylab.ylabel(<span class="st">&#39;Distance (meters)&#39;</span>)
+    a,b = pylab.polyfit(xVals, yVals, <span class="dv">1</span>)  <span class="co"># fit y = ax + b</span>
+    <span class="co"># use line equation to graph predicted values</span>
+    estYVals = a*xVals + b
+    k = <span class="dv">1</span>/a
+    pylab.plot(xVals, estYVals, label = <span class="st">&#39;Linear fit, k = &#39;</span>
+               + <span class="dt">str</span>(<span class="dt">round</span>(k, <span class="dv">5</span>)))
+    pylab.legend(loc = <span class="st">&#39;best&#39;</span>)</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python">fileName = <span class="st">&#39;../springData.txt&#39;</span>
+fitData(filename)
+pylab.show()</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="kw">def</span> fitData1(fileName):
+    <span class="co">&quot;&quot;&quot;</span>
+<span class="co">    Does linear and cubic regression of data and plots those curves with the data</span>
+<span class="co">    &quot;&quot;&quot;</span>
+    xVals, yVals = getData(fileName)
+    xVals = pylab.array(xVals)
+    yVals = pylab.array(yVals)
+    xVals = xVals*<span class="fl">9.81</span>  <span class="co"># convert mass to force (F = mg)</span>
+    pylab.plot(xVals, yVals, <span class="st">&#39;bo&#39;</span>, label = <span class="st">&#39;Measured displacements&#39;</span>)
+    pylab.title(<span class="st">&#39;Measured Displacement of Spring&#39;</span>)
+    pylab.xlabel(<span class="st">&#39;|Force| (Newtons)&#39;</span>)
+    pylab.ylabel(<span class="st">&#39;Distance (meters)&#39;</span>)
+    <span class="co"># linear regression</span>
+    a,b = pylab.polyfit(xVals, yVals, <span class="dv">1</span>) 
+    estYVals = a*xVals + b
+    pylab.plot(xVals, estYVals, label = <span class="st">&#39;Linear fit&#39;</span>)
+    <span class="co"># cubic regresson</span>
+    a,b,c,d = pylab.polyfit(xVals, yVals, <span class="dv">3</span>)
+    estYVals = a*(xVals**<span class="dv">3</span>) + b*xVals**<span class="dv">2</span> + c*xVals + d
+    pylab.plot(xVals, estYVals, label = <span class="st">&#39;Cubic fit&#39;</span>)
+    pylab.legend(loc = <span class="st">&#39;best&#39;</span>)</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python">fileName = <span class="st">&#39;../springData.txt&#39;</span>
+fitData1(filename)
+pylab.show()</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="kw">def</span> fitData2(fileName):
+    <span class="co">&quot;&quot;&quot;</span>
+<span class="co">    &quot;&quot;&quot;</span>
+    xVals, yVals = getData(fileName)
+    <span class="co"># add some potential heavier masses that haven&#39;t been tried yet:</span>
+    extX = pylab.array(xVals + [<span class="fl">1.05</span>, <span class="fl">1.1</span>, <span class="fl">1.15</span>, <span class="fl">1.2</span>, <span class="fl">1.25</span>]) 
+    xVals = pylab.array(xVals)
+    yVals = pylab.array(yVals)
+    xVals = xVals*<span class="fl">9.81</span>  <span class="co"># convert mass to force (F = mg)</span>
+    extX = extX*<span class="fl">9.81</span>    <span class="co"># convert mass to force (F = mg)</span>
+    pylab.plot(xVals, yVals, <span class="st">&#39;bo&#39;</span>, label = <span class="st">&#39;Measured displacements&#39;</span>)
+    pylab.title(<span class="st">&#39;Measured Displacement of Spring&#39;</span>)
+    pylab.xlabel(<span class="st">&#39;|Force| (Newtons)&#39;</span>)
+    pylab.ylabel(<span class="st">&#39;Distance (meters)&#39;</span>)
+    <span class="co"># linear regression:</span>
+    a,b = pylab.polyfit(xVals, yVals, <span class="dv">1</span>)
+    estYVals = a*extX + b
+    pylab.plot(extX, estYVals, label = <span class="st">&#39;Linear fit&#39;</span>)
+    <span class="co"># cubic regression</span>
+    a,b,c,d = pylab.polyfit(xVals, yVals, <span class="dv">3</span>)
+    estYVals = a*(extX**<span class="dv">3</span>) + b*extX**<span class="dv">2</span> + c*extX + d
+    pylab.plot(extX, estYVals, label = <span class="st">&#39;Cubic fit&#39;</span>)
+    pylab.legend(loc = <span class="st">&#39;best&#39;</span>)</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python">fileName = <span class="st">&#39;../springData.txt&#39;</span>
+fitData2(filename)
+pylab.show()</code></pre>
+<p>The prediction from the cubic model does not make sense.</p>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="kw">def</span> fitData3(fileName):
+    xVals, yVals = getData(fileName)
+    <span class="co"># remove last 6 values from data, for which Hooks law might not apply:</span>
+    xVals = pylab.array(xVals[:-<span class="dv">6</span>])
+    yVals = pylab.array(yVals[:-<span class="dv">6</span>])
+    xVals = xVals*<span class="fl">9.81</span>  <span class="co"># convert mass to force (F = mg)</span>
+    pylab.plot(xVals, yVals, <span class="st">&#39;bo&#39;</span>, label = <span class="st">&#39;Measured points&#39;</span>)
+    pylab.title(<span class="st">&#39;Measured Displacement of Spring&#39;</span>)
+    pylab.xlabel(<span class="st">&#39;Force (Newtons)&#39;</span>)
+    pylab.ylabel(<span class="st">&#39;Distance (meters)&#39;</span>)
+    a,b = pylab.polyfit(xVals, yVals, <span class="dv">1</span>)  <span class="co"># fix y = ax + b</span>
+    <span class="co"># use line equation to graph predicted values</span>
+    estYVals = a*xVals + b
+    k = <span class="dv">1</span>/a
+    pylab.plot(xVals, estYVals, label = <span class="st">&#39;Linear fit, k = &#39;</span>
+               + <span class="dt">str</span>(<span class="dt">round</span>(k, <span class="dv">5</span>)))
+    pylab.legend(loc = <span class="st">&#39;best&#39;</span>)</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python">fileName = <span class="st">&#39;../springData.txt&#39;</span>
+fitData3(filename)
+pylab.show()</code></pre>
+<h3 id="goodness-of-fit-of-a-model-to-data">Goodness of Fit of a model to data</h3>
+<p>Heigth of flying arrow measured in 4 replicates and over a range of distances.</p>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="kw">def</span> getTrajectoryData(fileName):
+    <span class="co">&quot;&quot;&quot;</span>
+<span class="co">    reads the data in the launcherData.txt file</span>
+<span class="co">    &quot;&quot;&quot;</span>
+    dataFile = <span class="dt">open</span>(fileName, <span class="st">&#39;r&#39;</span>)
+    distances = []
+    heights1, heights2, heights3, heights4 = [],[],[],[]
+    discardHeader = dataFile.readline()
+    <span class="kw">for</span> line in dataFile:
+        d, h1, h2, h3, h4 = line.split()
+        distances.append(<span class="dt">float</span>(d))
+        heights1.append(<span class="dt">float</span>(h1))
+        heights2.append(<span class="dt">float</span>(h2))
+        heights3.append(<span class="dt">float</span>(h3))
+        heights4.append(<span class="dt">float</span>(h4))
+    dataFile.close()
+    <span class="kw">return</span> (distances, [heights1, heights2, heights3, heights4])</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="kw">def</span> tryFits(fName):
+    <span class="co">&quot;&quot;&quot;</span>
+<span class="co">    plots the mean of the height measurements over the distances as well as</span>
+<span class="co">    a linear and quadratic fit</span>
+<span class="co">    &quot;&quot;&quot;</span>
+    distances, heights = getTrajectoryData(fName)
+    distances = pylab.array(distances)*<span class="dv">36</span> <span class="co"># conversion from yeards to inches</span>
+    <span class="co"># get average of height measurements for each distance</span>
+    totHeights = pylab.array([<span class="dv">0</span>]*<span class="dt">len</span>(distances))
+    <span class="kw">for</span> h in heights: <span class="co"># &#39;heights&#39; is an array of arrays</span>
+        totHeights = totHeights + pylab.array(h) <span class="co"># vectorised addition</span>
+    meanHeights = totHeights/<span class="dt">float</span>(<span class="dt">len</span>(heights))
+    <span class="co"># plot the data</span>
+    pylab.title(<span class="st">&#39;Trajectory of Projectile (Mean of 4 Trials)&#39;</span>)
+    pylab.xlabel(<span class="st">&#39;Inches from Launch Point&#39;</span>)
+    pylab.ylabel(<span class="st">&#39;Inches Above Launch Point&#39;</span>)
+    pylab.plot(distances, meanHeights, <span class="st">&#39;bo&#39;</span>)
+    <span class="co"># linear regression</span>
+    a,b = pylab.polyfit(distances, meanHeights, <span class="dv">1</span>)
+    altitudes = a*distances + b
+    pylab.plot(distances, altitudes, <span class="st">&#39;r&#39;</span>,
+               label = <span class="st">&#39;Linear Fit&#39;</span>)
+    <span class="co"># quadratic polynomial regression (second degree)</span>
+    a,b,c = pylab.polyfit(distances, meanHeights, <span class="dv">2</span>)
+    altitudes = a*(distances**<span class="dv">2</span>) + b*distances + c
+    pylab.plot(distances, altitudes, <span class="st">&#39;g&#39;</span>,
+               label = <span class="st">&#39;Quadratic Fit&#39;</span>)
+    pylab.legend()</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python">?pylab.polyfit</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python">%matplotlib inline
+
+tryFits(<span class="st">&#39;../launcherData.txt&#39;</span>)
+pylab.show()</code></pre>
+<div class="figure">
+<img src="figure/output_46_0.png" alt="png" /><p class="caption">png</p>
+</div>
+<p><span class="math">\(R^{2}\)</span> is a measure of the goodness of fit of a model to data and can be interpreted as the proportion of variance explained by the model:</p>
+<p><span class="math">\[
+R^{2} = 1 - \frac{\sigma_{residual}^{2}}{\sigma_{total}^{2}}
+\]</span></p>
+<p>The variance of residuals <span class="math">\(\sigma_{residual}^{2}\)</span> is the variance unexplained by the model.</p>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="kw">def</span> rSquare(measured, estimated):
+    <span class="co">&quot;&quot;&quot;</span>
+<span class="co">    measured: one dimensional array of measured values</span>
+<span class="co">    estimate: one dimensional array of predicted values</span>
+<span class="co">    </span>
+<span class="co">    returns the coefficient of determination R squared</span>
+<span class="co">    &quot;&quot;&quot;</span>
+    SS_res = ((estimated - measured)**<span class="dv">2</span>).<span class="dt">sum</span>() <span class="co"># sum of squares of residuals</span>
+    data_mean = measured.<span class="dt">sum</span>()/<span class="dt">float</span>(<span class="dt">len</span>(measured)) <span class="co"># mean of all data values</span>
+    SS_tot = ((data_mean - measured)**<span class="dv">2</span>).<span class="dt">sum</span>() <span class="co"># total sum of squares</span>
+    <span class="kw">return</span> <span class="dv">1</span> - SS_res/SS_tot</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="kw">def</span> tryFits1(fName):
+    distances, heights = getTrajectoryData(fName)
+    distances = pylab.array(distances)*<span class="dv">36</span>
+    totHeights = pylab.array([<span class="dv">0</span>]*<span class="dt">len</span>(distances))
+    <span class="co"># get average of height measurements for each distance</span>
+    <span class="kw">for</span> h in heights:
+        totHeights = totHeights + pylab.array(h)
+    meanHeights = totHeights/<span class="dt">float</span>(<span class="dt">len</span>(heights))
+    <span class="co"># plot data</span>
+    pylab.title(<span class="st">&#39;Trajectory of Projectile (Mean of 4 Trials)&#39;</span>)
+    pylab.xlabel(<span class="st">&#39;Inches from Launch Point&#39;</span>)
+    pylab.ylabel(<span class="st">&#39;Inches Above Launch Point&#39;</span>)
+    pylab.plot(distances, meanHeights, <span class="st">&#39;bo&#39;</span>)
+    <span class="co"># linear regression</span>
+    a,b = pylab.polyfit(distances, meanHeights, <span class="dv">1</span>)
+    altitudes = a*distances + b
+    pylab.plot(distances, altitudes, <span class="st">&#39;r&#39;</span>,
+               label = <span class="st">&#39;Linear Fit&#39;</span> + <span class="st">&#39;, R2 = &#39;</span>
+               + <span class="dt">str</span>(<span class="dt">round</span>(rSquare(meanHeights, altitudes), <span class="dv">4</span>))) <span class="co"># include R^2 in legend</span>
+    <span class="co"># quadratic regression</span>
+    a,b,c = pylab.polyfit(distances, meanHeights, <span class="dv">2</span>)
+    altitudes = a*(distances**<span class="dv">2</span>) + b*distances + c
+    pylab.plot(distances, altitudes, <span class="st">&#39;g&#39;</span>,
+               label = <span class="st">&#39;Quadratic Fit&#39;</span> + <span class="st">&#39;, R2 = &#39;</span>
+               + <span class="dt">str</span>(<span class="dt">round</span>(rSquare(meanHeights, altitudes), <span class="dv">4</span>))) <span class="co"># include R^2 in legend</span>
+    pylab.legend(loc=<span class="st">&quot;lower center&quot;</span>)</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python">tryFits1(<span class="st">&#39;../launcherData.txt&#39;</span>)
+pylab.show()</code></pre>
+<div class="figure">
+<img src="figure/output_52_0.png" alt="png" /><p class="caption">png</p>
+</div>
+<pre class="sourceCode python"><code class="sourceCode python">?pylab.legend()</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="kw">def</span> fitDataWithRsquare(fileName):
+    <span class="co">&quot;&quot;&quot;</span>
+<span class="co">    Uses pylab&#39;s &#39;polyfit&#39; function to fit a straight line to the data,</span>
+<span class="co">    i. e. to do a linear regression</span>
+<span class="co">    &quot;&quot;&quot;</span>
+    <span class="co"># get data from file</span>
+    xVals, yVals = getData(fileName)
+    xVals = pylab.array(xVals)
+    yVals = pylab.array(yVals)
+    xVals = xVals*<span class="fl">9.81</span>  <span class="co"># convert mass to force (F = mg)</span>
+    <span class="co"># plot the data</span>
+    pylab.plot(xVals, yVals, <span class="st">&#39;bo&#39;</span>, label = <span class="st">&#39;Measured points&#39;</span>)
+    pylab.title(<span class="st">&#39;Measured Displacement of Spring&#39;</span>)
+    pylab.xlabel(<span class="st">&#39;Force (Newtons)&#39;</span>)
+    pylab.ylabel(<span class="st">&#39;Distance (meters)&#39;</span>)
+    <span class="co"># first degree linear regression</span>
+    a,b = pylab.polyfit(xVals, yVals, <span class="dv">1</span>)  <span class="co"># fit y = ax + b</span>
+    <span class="co"># use line equation to graph predicted values</span>
+    estYVals = a*xVals + b
+    pylab.plot(xVals, estYVals, label = <span class="st">&#39;Linear fit, R = &#39;</span>
+               + <span class="dt">str</span>(<span class="dt">round</span>(rSquare(yVals, estYVals), <span class="dv">5</span>)))
+    pylab.legend(loc = <span class="st">&#39;best&#39;</span>)</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python">fitDataWithRsquare(<span class="st">&#39;../springData.txt&#39;</span>)
+pylab.show()</code></pre>
+<div class="figure">
+<img src="figure/output_55_0.png" alt="png" /><p class="caption">png</p>
+</div>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="kw">def</span> fitData3WithRsquare(fileName):
+    <span class="co">&quot;&quot;&quot;</span>
+<span class="co">    Uses pylab&#39;s &#39;polyfit&#39; function to fit a straight line to the data,</span>
+<span class="co">    i. e. to do a linear regression</span>
+<span class="co">    &quot;&quot;&quot;</span>
+    <span class="co"># get data from file</span>
+    xVals, yVals = getData(fileName)
+    <span class="co"># remove last six data points where Hooke&#39;s law might not apply:</span>
+    xVals = pylab.array(xVals[:-<span class="dv">6</span>]) <span class="co"># skip last 6 values</span>
+    yVals = pylab.array(yVals[:-<span class="dv">6</span>])
+    xVals = xVals*<span class="fl">9.81</span>  <span class="co"># convert mass to force (F = mg)</span>
+    <span class="co"># plot the data</span>
+    pylab.plot(xVals, yVals, <span class="st">&#39;bo&#39;</span>, label = <span class="st">&#39;Measured points&#39;</span>)
+    pylab.title(<span class="st">&#39;Measured Displacement of Spring&#39;</span>)
+    pylab.xlabel(<span class="st">&#39;Force (Newtons)&#39;</span>)
+    pylab.ylabel(<span class="st">&#39;Distance (meters)&#39;</span>)
+    <span class="co"># first degree linear regression</span>
+    a,b = pylab.polyfit(xVals, yVals, <span class="dv">1</span>)  <span class="co"># fit y = ax + b</span>
+    <span class="co"># use line equation to graph predicted values</span>
+    estYVals = a*xVals + b
+    pylab.plot(xVals, estYVals, label = <span class="st">&#39;Linear fit, R^2 = &#39;</span>
+               + <span class="dt">str</span>(<span class="dt">round</span>(rSquare(yVals, estYVals), <span class="dv">4</span>)))
+    pylab.legend(loc = <span class="st">&#39;best&#39;</span>)</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python">fitData3WithRsquare(<span class="st">&#39;../springData.txt&#39;</span>)
+pylab.show()</code></pre>
+<div class="figure">
+<img src="figure/output_57_0.png" alt="png" /><p class="caption">png</p>
+</div>
+<h2 id="the-effect-of-delaying-treatment-on-patient-disease">The Effect of Delaying Treatment on Patient Disease</h2>
+<p>This problem set makes use of classes that I have defined for the problem set of last week: simulating virus population in patient and effect of drugs.</p>
+<p>Instead of copying all the code into this notebook, I have converted the <code>Monte-Carlosimulations.ipynb</code> to pure python with <code>jupyter nbconvert --to python Monte-Carlosimulations.ipynb</code>. I am going to import this script as a module.</p>
+<p>The directories where python looks for modules are:</p>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="ch">import</span> sys
+
+<span class="dt">print</span> sys.path</code></pre>
+<pre><code>[&#39;&#39;, &#39;/Users/Claudius/anaconda/lib/python27.zip&#39;, &#39;/Users/Claudius/anaconda/lib/python2.7&#39;, &#39;/Users/Claudius/anaconda/lib/python2.7/plat-darwin&#39;, &#39;/Users/Claudius/anaconda/lib/python2.7/plat-mac&#39;, &#39;/Users/Claudius/anaconda/lib/python2.7/plat-mac/lib-scriptpackages&#39;, &#39;/Users/Claudius/anaconda/lib/python2.7/lib-tk&#39;, &#39;/Users/Claudius/anaconda/lib/python2.7/lib-old&#39;, &#39;/Users/Claudius/anaconda/lib/python2.7/lib-dynload&#39;, &#39;/Users/Claudius/anaconda/lib/python2.7/site-packages/Sphinx-1.3.1-py2.7.egg&#39;, &#39;/Users/Claudius/anaconda/lib/python2.7/site-packages/setuptools-18.5-py2.7.egg&#39;, &#39;/Users/Claudius/anaconda/lib/python2.7/site-packages&#39;, &#39;/Users/Claudius/anaconda/lib/python2.7/site-packages/aeosa&#39;, &#39;/Users/Claudius/anaconda/lib/python2.7/site-packages/IPython/extensions&#39;, &#39;/Users/Claudius/.ipython&#39;]</code></pre>
+<p>I can modify the python path to make it look for modules in custom places first:</p>
+<pre class="sourceCode python"><code class="sourceCode python">sys.path = [<span class="st">&#39;/Users/Claudius/Dropbox/MITx_6.00.2x_Introduction_to_Computational_Thinking_and_Data_Science&#39;</span>] + sys.path
+
+<span class="dt">print</span> sys.path</code></pre>
+<pre><code>[&#39;/Users/Claudius/Dropbox/MITx_6.00.2x_Introduction_to_Computational_Thinking_and_Data_Science&#39;, &#39;&#39;, &#39;/Users/Claudius/anaconda/lib/python27.zip&#39;, &#39;/Users/Claudius/anaconda/lib/python2.7&#39;, &#39;/Users/Claudius/anaconda/lib/python2.7/plat-darwin&#39;, &#39;/Users/Claudius/anaconda/lib/python2.7/plat-mac&#39;, &#39;/Users/Claudius/anaconda/lib/python2.7/plat-mac/lib-scriptpackages&#39;, &#39;/Users/Claudius/anaconda/lib/python2.7/lib-tk&#39;, &#39;/Users/Claudius/anaconda/lib/python2.7/lib-old&#39;, &#39;/Users/Claudius/anaconda/lib/python2.7/lib-dynload&#39;, &#39;/Users/Claudius/anaconda/lib/python2.7/site-packages/Sphinx-1.3.1-py2.7.egg&#39;, &#39;/Users/Claudius/anaconda/lib/python2.7/site-packages/setuptools-18.5-py2.7.egg&#39;, &#39;/Users/Claudius/anaconda/lib/python2.7/site-packages&#39;, &#39;/Users/Claudius/anaconda/lib/python2.7/site-packages/aeosa&#39;, &#39;/Users/Claudius/anaconda/lib/python2.7/site-packages/IPython/extensions&#39;, &#39;/Users/Claudius/.ipython&#39;]</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="ch">import</span> Monte_Carlo_simulations <span class="ch">as</span> VIRUS</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="dt">dir</span>(VIRUS)</code></pre>
+<pre><code>[&#39;NoChildException&#39;,
+ &#39;Patient&#39;,
+ &#39;ResistantVirus&#39;,
+ &#39;SimpleVirus&#39;,
+ &#39;TreatedPatient&#39;,
+ &#39;__builtins__&#39;,
+ &#39;__doc__&#39;,
+ &#39;__file__&#39;,
+ &#39;__name__&#39;,
+ &#39;__package__&#39;,
+ &#39;mark_recap&#39;,
+ &#39;numpy&#39;,
+ &#39;pylab&#39;,
+ &#39;random&#39;,
+ &#39;sim_mark_recap&#39;,
+ &#39;simulationWithDrug&#39;,
+ &#39;simulationWithoutDrug&#39;]</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python">v = VIRUS.SimpleVirus(maxBirthProb=<span class="fl">0.5</span>, clearProb=<span class="fl">0.01</span>)</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="ch">import</span> inspect
+
+<span class="dt">print</span> inspect.getsource(VIRUS.simulationWithDrug)</code></pre>
+<pre><code>def simulationWithDrug(numViruses, maxPop, maxBirthProb, clearProb, resistances,
+                       mutProb, numTrials):
+    &quot;&quot;&quot; 
+    Runs simulations and plots graphs for problem 5.
+
+    For each of numTrials trials, instantiates a patient, runs a simulation for
+    150 timesteps, adds guttagonol, and runs the simulation for an additional
+    150 timesteps.  At the end plots the average virus population size
+    (for both the total virus population and the guttagonol-resistant virus
+    population) as a function of time.
+
+    numViruses: number of ResistantVirus to create for patient (an integer)
+    maxPop: maximum virus population for patient (an integer)
+    maxBirthProb: Maximum reproduction probability (a float between 0-1)        
+    clearProb: maximum clearance probability (a float between 0-1)
+    resistances: a dictionary of drugs that each ResistantVirus is resistant to
+                 (e.g., {&#39;guttagonol&#39;: False})
+    mutProb: mutation probability for each ResistantVirus particle
+             (a float between 0-1). 
+    numTrials: number of simulation runs to execute (an integer)
+    
+    &quot;&quot;&quot;
+    timesteps = 300
+    virusTotalPop = [0] * timesteps
+    virusResistPop = [0] * timesteps
+    
+    
+    for _ in range(numTrials):
+        # it is important to initialise the patient for each trial with a new list of
+        # virus instances
+        viruses = []
+        for _ in range(numViruses):
+            viruses.append( ResistantVirus(maxBirthProb, clearProb, resistances, mutProb) )
+        #for v in viruses:
+        #    print v.getResistances()
+        p = TreatedPatient(viruses, maxPop)
+        for i in range(timesteps/2):
+            virusTotalPop[i] += p.update()
+            virusResistPop[i] += p.getResistPop( resistances.keys() )
+        p.addPrescription(&#39;guttagonol&#39;)
+        for i in range(timesteps/2, timesteps):
+            virusTotalPop[i] += p.update()
+            virusResistPop[i] += p.getResistPop( resistances.keys() )
+        
+        
+    for i in range(timesteps):
+        virusTotalPop[i] /= float(numTrials)
+        virusResistPop[i] /= float(numTrials)
+     
+    pylab.plot(virusTotalPop, label=&#39;total&#39;)
+    pylab.plot(virusResistPop, label=&#39;resistant&#39;)
+    pylab.xlabel(&#39;time steps&#39;)
+    pylab.ylabel(&#39;virus population size&#39;)
+    pylab.title(&#39;virus number over time&#39;)
+    pylab.legend()
+    pylab.show()</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="kw">def</span> simulationDelayedTreatment(numTrials=<span class="dv">10</span>, maxPop=<span class="dv">1000</span>, numViruses=<span class="dv">100</span>, \
+                               maxBirthProb=<span class="fl">0.1</span>, clearProb=<span class="fl">0.05</span>, resistances={<span class="st">&#39;guttagonol&#39;</span>: <span class="ot">False</span>}, mutProb=<span class="fl">0.005</span>, \
+                              delays=(<span class="dv">300</span>, <span class="dv">150</span>, <span class="dv">75</span>, <span class="dv">0</span>)):
+    <span class="co">&quot;&quot;&quot; </span>
+<span class="co">    Runs simulations and make histograms for problem 1.</span>
+
+<span class="co">    Runs numTrials simulations to show the relationship between delayed</span>
+<span class="co">    treatment and patient outcome using a histogram.</span>
+
+<span class="co">    Histograms of final total virus populations are displayed for delays of 300,</span>
+<span class="co">    150, 75, 0 timesteps (followed by an additional 150 timesteps of</span>
+<span class="co">    simulation).</span>
+
+<span class="co">    numTrials: number of simulation runs to execute (an integer)</span>
+<span class="co">    numViruses: number of ResistantVirus to create for patient (an integer)</span>
+<span class="co">    maxPop: maximum virus population for patient (an integer)</span>
+<span class="co">    maxBirthProb: Maximum reproduction probability (a float between 0-1)        </span>
+<span class="co">    clearProb: maximum clearance probability (a float between 0-1)</span>
+<span class="co">    resistances: a dictionary of drugs that each ResistantVirus is resistant to</span>
+<span class="co">                 (e.g., {&#39;guttagonol&#39;: False})</span>
+<span class="co">    mutProb: mutation probability for each ResistantVirus particle</span>
+<span class="co">             (a float between 0-1).</span>
+<span class="co">    delays: number time steps before treatment starts (tuple)</span>
+<span class="co">    &quot;&quot;&quot;</span>
+    virusTotalPop = {}
+    <span class="kw">for</span> _ in <span class="dt">range</span>(numTrials):
+        <span class="kw">for</span> delay in delays:
+            <span class="co"># it is important to initialise the patient for each trial and delay with a new list of</span>
+            <span class="co"># virus instances</span>
+            viruses = []
+            <span class="kw">for</span> _ in <span class="dt">range</span>(numViruses):
+                viruses.append( VIRUS.ResistantVirus(maxBirthProb, clearProb, resistances, mutProb) )
+            <span class="co">#for v in viruses:</span>
+            <span class="co">#    print v.getResistances()</span>
+            p = VIRUS.TreatedPatient(viruses, maxPop)
+            <span class="kw">for</span> _ in <span class="dt">range</span>(delay):
+                p.update()
+                <span class="co">#p.getResistPop( resistances.keys() )</span>
+            p.addPrescription(<span class="st">&#39;guttagonol&#39;</span>)
+            <span class="kw">for</span> _ in <span class="dt">range</span>(<span class="dv">150-1</span>):
+                p.update()
+                <span class="co">#p.getResistPop( resistances.keys() )</span>
+            virusTotalPop.setdefault(delay, []).append( p.update() )
+    <span class="co"># create histograms          </span>
+    <span class="kw">for</span> delay in delays:
+    <span class="co">#    print delay, virusTotalPop[delay]</span>
+        pylab.figure() 
+        pylab.hist(virusTotalPop[delay], bins=(<span class="dt">max</span>(virusTotalPop)-<span class="dt">min</span>(virusTotalPop))/<span class="dv">15</span>, label=<span class="st">&#39;number of trials &#39;</span> + <span class="dt">str</span>(numTrials))
+        <span class="co">#pylab.hist(virusResistPop, label=&#39;resistant&#39;)</span>
+        pylab.xlabel(<span class="st">&#39;total final virus population&#39;</span>)
+        pylab.ylabel(<span class="st">&#39;frequency&#39;</span>)
+        pylab.title(<span class="st">&#39;treatment delayed for &#39;</span> + <span class="dt">str</span>(delay) + <span class="st">&#39; steps&#39;</span>)
+        pylab.legend()</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="ch">import</span> pylab
+
+%matplotlib inline
+
+%time
+
+simulationDelayedTreatment(numTrials=<span class="dv">100</span>)
+pylab.show()</code></pre>
+<pre><code>CPU times: user 4 µs, sys: 1 µs, total: 5 µs
+Wall time: 10 µs</code></pre>
+<div class="figure">
+<img src="figure/output_70_1.png" alt="png" /><p class="caption">png</p>
+</div>
+<div class="figure">
+<img src="figure/output_70_2.png" alt="png" /><p class="caption">png</p>
+</div>
+<div class="figure">
+<img src="figure/output_70_3.png" alt="png" /><p class="caption">png</p>
+</div>
+<div class="figure">
+<img src="figure/output_70_4.png" alt="png" /><p class="caption">png</p>
+</div>
+<p>Remember that the drug does not kill the virus. It just stops it from reproducing, so that viruses are gradually “cleared” from the patient.</p>
+<p>In order to be able to make it easier to compare these plot, it would be good to get them on the same axis scale.</p>
+<p>Do <a href="http://matplotlib.org/users/pyplot_tutorial.html">pyplot tutorial</a> !</p>
+<h2 id="designing-a-treatment-plan-with-two-drugs">Designing a Treatment Plan With Two Drugs</h2>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="kw">def</span> simulationTwoDrugsDelayedTreatment(numTrials=<span class="dv">10</span>, numViruses=<span class="dv">100</span>, maxPop=<span class="dv">1000</span>, maxBirthProb=<span class="fl">0.1</span>, \
+                           clearProb=<span class="fl">0.05</span>, resistances={<span class="st">&#39;guttagonol&#39;</span>: <span class="ot">False</span>, <span class="st">&#39;grimpex&#39;</span>: <span class="ot">False</span>}, mutProb=<span class="fl">0.005</span>,\
+                                      delays=(<span class="dv">300</span>, <span class="dv">150</span>, <span class="dv">75</span>, <span class="dv">0</span>)):
+    <span class="co">&quot;&quot;&quot; </span>
+<span class="co">    Runs simulations and make histograms for problem 2.</span>
+
+<span class="co">    Runs numTrials simulations to show the relationship between administration</span>
+<span class="co">    of multiple drugs and patient outcome.</span>
+
+<span class="co">    Histograms of final total virus populations are displayed for lag times of</span>
+<span class="co">    300, 150, 75, 0 timesteps between adding drugs (followed by an additional</span>
+<span class="co">    150 timesteps of simulation).</span>
+
+<span class="co">    numTrials: number of simulation runs to execute (an integer)</span>
+<span class="co">    &quot;&quot;&quot;</span>
+    virusTotalPop = {}
+    <span class="kw">for</span> _ in <span class="dt">range</span>(numTrials):
+        <span class="kw">for</span> delay in delays:
+            <span class="co"># it is important to initialise the patient for each trial and delay with a new list of</span>
+            <span class="co"># virus instances</span>
+            viruses = []
+            <span class="kw">for</span> _ in <span class="dt">range</span>(numViruses):
+                viruses.append( VIRUS.ResistantVirus(maxBirthProb, clearProb, resistances, mutProb) )
+            <span class="co">#for v in viruses:</span>
+            <span class="co">#    print v.getResistances()</span>
+            p = VIRUS.TreatedPatient(viruses, maxPop)
+            <span class="co"># run simulation for 150 generations without drug</span>
+            <span class="kw">for</span> _ in <span class="dt">range</span>(<span class="dv">150</span>):
+                p.update()
+            <span class="co"># administer first drug to the patient</span>
+            p.addPrescription(<span class="st">&#39;guttagonol&#39;</span>)
+            <span class="co"># run simulation for &#39;delay&#39; number of generations</span>
+            <span class="co"># before administering the second drug</span>
+            <span class="kw">for</span> _ in <span class="dt">range</span>(delay):
+                p.update()
+                <span class="co">#p.getResistPop( resistances.keys() )</span>
+            p.addPrescription(<span class="st">&#39;grimpex&#39;</span>)
+            <span class="co"># finally run the simulation for another 150 generations</span>
+            <span class="co"># and store the final total virus population size</span>
+            <span class="kw">for</span> _ in <span class="dt">range</span>(<span class="dv">150-1</span>):
+                p.update()
+                <span class="co">#p.getResistPop( resistances.keys() )</span>
+            virusTotalPop.setdefault(delay, []).append( p.update() )
+    <span class="co"># create histograms          </span>
+    <span class="kw">for</span> delay in delays:
+    <span class="co">#    print delay, virusTotalPop[delay]</span>
+        pylab.figure() 
+        pylab.hist(virusTotalPop[delay], bins=<span class="dt">int</span>((<span class="dt">max</span>(virusTotalPop)-<span class="dt">min</span>(virusTotalPop))/<span class="dv">15</span>)+<span class="dv">1</span>, label=<span class="st">&#39;number of trials &#39;</span> + <span class="dt">str</span>(numTrials))
+        <span class="co">#pylab.hist(virusResistPop, label=&#39;resistant&#39;)</span>
+        pylab.xlabel(<span class="st">&#39;total final virus population&#39;</span>)
+        pylab.ylabel(<span class="st">&#39;frequency&#39;</span>)
+        pylab.title(<span class="st">&#39;second drug administered after &#39;</span> + <span class="dt">str</span>(<span class="dv">150</span>+delay) + <span class="st">&#39; steps&#39;</span>)
+        pylab.legend()</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python">%matplotlib inline
+
+%time
+
+simulationTwoDrugsDelayedTreatment(numTrials=<span class="dv">100</span>)
+pylab.show()</code></pre>
+<pre><code>CPU times: user 4 µs, sys: 1 µs, total: 5 µs
+Wall time: 10 µs</code></pre>
+<div class="figure">
+<img src="figure/output_76_1.png" alt="png" /><p class="caption">png</p>
+</div>
+<div class="figure">
+<img src="figure/output_76_2.png" alt="png" /><p class="caption">png</p>
+</div>
+<div class="figure">
+<img src="figure/output_76_3.png" alt="png" /><p class="caption">png</p>
+</div>
+<div class="figure">
+<img src="figure/output_76_4.png" alt="png" /><p class="caption">png</p>
+</div>
+<h3 id="what-is-the-relationship-between-onset-of-first-drug-administration-and-probability-of-recovery-or-remission-of-patients">What is the relationship between onset of first drug administration and probability of recovery or remission of patients?</h3>
+<p>To answer that question I need to modify the previous simulation function.</p>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="kw">def</span> sim2DrugsDelayedTreat(numTrials=<span class="dv">10</span>, numViruses=<span class="dv">100</span>, maxPop=<span class="dv">1000</span>, maxBirthProb=<span class="fl">0.1</span>, \
+                           clearProb=<span class="fl">0.05</span>, resistances={<span class="st">&#39;guttagonol&#39;</span>: <span class="ot">False</span>, <span class="st">&#39;grimpex&#39;</span>: <span class="ot">False</span>}, mutProb=<span class="fl">0.005</span>,\
+                                      delays=(<span class="dv">150</span>,), steps_without_drugs=<span class="dv">150</span>):
+    <span class="co">&quot;&quot;&quot; </span>
+<span class="co">    Runs simulations and make histograms for problem 2.</span>
+
+<span class="co">    Runs numTrials simulations to show the relationship between the first administration</span>
+<span class="co">    of multiple drugs and patient outcome.</span>
+
+<span class="co">    numTrials: number of simulation runs to execute (an integer)</span>
+<span class="co">    </span>
+<span class="co">    Returns the number of cured patients or patients in remission (with up to 50 viruses in body).</span>
+<span class="co">    &quot;&quot;&quot;</span>
+    virusTotalPop = {}
+    <span class="kw">for</span> _ in <span class="dt">range</span>(numTrials):
+        <span class="kw">for</span> delay in delays:
+            <span class="co"># it is important to initialise the patient for each trial and delay with a new list of</span>
+            <span class="co"># virus instances</span>
+            viruses = []
+            <span class="kw">for</span> _ in <span class="dt">range</span>(numViruses):
+                viruses.append( VIRUS.ResistantVirus(maxBirthProb, clearProb, resistances, mutProb) )
+            <span class="co">#for v in viruses:</span>
+            <span class="co">#    print v.getResistances()</span>
+            p = VIRUS.TreatedPatient(viruses, maxPop)
+            <span class="co"># run simulation for 150 generations without drug</span>
+            <span class="kw">for</span> _ in <span class="dt">range</span>(steps_without_drugs):
+                p.update()
+            <span class="co"># administer first drug to the patient</span>
+            p.addPrescription(<span class="st">&#39;guttagonol&#39;</span>)
+            <span class="co"># run simulation for &#39;delay&#39; number of generations</span>
+            <span class="co"># before administering the second drug</span>
+            <span class="kw">for</span> _ in <span class="dt">range</span>(delay):
+                p.update()
+                <span class="co">#p.getResistPop( resistances.keys() )</span>
+            p.addPrescription(<span class="st">&#39;grimpex&#39;</span>)
+            <span class="co"># finally run the simulation for another 150 generations</span>
+            <span class="co"># and store the final total virus population size</span>
+            <span class="kw">for</span> _ in <span class="dt">range</span>(<span class="dv">150-1</span>):
+                p.update()
+                <span class="co">#p.getResistPop( resistances.keys() )</span>
+            virusTotalPop.setdefault(delay, []).append( p.update() )
+    <span class="co"># count how often a final total virus population was below 51</span>
+    <span class="ch">import</span> numpy <span class="ch">as</span> np
+    <span class="kw">for</span> d in delays:
+        virusTotalPop[d] = np.array(virusTotalPop[d])
+        <span class="kw">return</span> <span class="dt">sum</span>(virusTotalPop[d] &lt; <span class="dv">51</span>)</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python">x = (<span class="dv">0</span>, <span class="dv">25</span>, <span class="dv">50</span>, <span class="dv">100</span>, <span class="dv">200</span>, <span class="dv">300</span>)
+y = [<span class="dv">0</span>] * <span class="dt">len</span>(x)
+<span class="kw">for</span> i in <span class="dt">range</span>(<span class="dt">len</span>(x)):
+    y[i] = sim2DrugsDelayedTreat(numTrials=<span class="dv">100</span>, steps_without_drugs=x[i])</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python">pylab.plot(x, y, <span class="st">&#39;bo-&#39;</span>)
+pylab.xlabel(<span class="st">&#39;generations without drugs&#39;</span>)
+pylab.ylabel(<span class="st">&#39;number of cured patients&#39;</span>)
+pylab.title(<span class="st">&#39;relationship between onset of treatment</span><span class="ch">\n</span><span class="st"> and number cured patients&#39;</span>)
+pylab.show()</code></pre>
+<div class="figure">
+<img src="figure/output_81_0.png" alt="png" /><p class="caption">png</p>
+</div>
+<p>The relationship between number of cured patients and when the delay occurs is NOT linear. Most of the reduction in cured patients happens in the time window ip to 100 virus generations. After that a further delay in first drug administration does only minimally reduce the number of cured patients.</p>
+<h3 id="of-the-four-delay-values-tested-which-has-the-lowest-variance">Of the four delay values tested, which has the lowest variance?</h3>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="kw">def</span> simulationTwoDrugsDelayedTreatment(numTrials=<span class="dv">10</span>, numViruses=<span class="dv">100</span>, maxPop=<span class="dv">1000</span>, maxBirthProb=<span class="fl">0.1</span>, \
+                           clearProb=<span class="fl">0.05</span>, resistances={<span class="st">&#39;guttagonol&#39;</span>: <span class="ot">False</span>, <span class="st">&#39;grimpex&#39;</span>: <span class="ot">False</span>}, mutProb=<span class="fl">0.005</span>,\
+                                      delays=(<span class="dv">300</span>, <span class="dv">150</span>, <span class="dv">75</span>, <span class="dv">0</span>)):
+    <span class="co">&quot;&quot;&quot; </span>
+<span class="co">    Runs simulations and make histograms for problem 2.</span>
+
+<span class="co">    Runs numTrials simulations to show the relationship between administration</span>
+<span class="co">    of multiple drugs and patient outcome.</span>
+
+<span class="co">    Histograms of final total virus populations are displayed for lag times of</span>
+<span class="co">    300, 150, 75, 0 timesteps between adding drugs (followed by an additional</span>
+<span class="co">    150 timesteps of simulation).</span>
+
+<span class="co">    numTrials: number of simulation runs to execute (an integer)</span>
+<span class="co">    &quot;&quot;&quot;</span>
+    virusTotalPop = {}
+    <span class="kw">for</span> _ in <span class="dt">range</span>(numTrials):
+        <span class="kw">for</span> delay in delays:
+            <span class="co"># it is important to initialise the patient for each trial and delay with a new list of</span>
+            <span class="co"># virus instances</span>
+            viruses = []
+            <span class="kw">for</span> _ in <span class="dt">range</span>(numViruses):
+                viruses.append( VIRUS.ResistantVirus(maxBirthProb, clearProb, resistances, mutProb) )
+            <span class="co">#for v in viruses:</span>
+            <span class="co">#    print v.getResistances()</span>
+            p = VIRUS.TreatedPatient(viruses, maxPop)
+            <span class="co"># run simulation for 150 generations without drug</span>
+            <span class="kw">for</span> _ in <span class="dt">range</span>(<span class="dv">150</span>):
+                p.update()
+            <span class="co"># administer first drug to the patient</span>
+            p.addPrescription(<span class="st">&#39;guttagonol&#39;</span>)
+            <span class="co"># run simulation for &#39;delay&#39; number of generations</span>
+            <span class="co"># before administering the second drug</span>
+            <span class="kw">for</span> _ in <span class="dt">range</span>(delay):
+                p.update()
+                <span class="co">#p.getResistPop( resistances.keys() )</span>
+            p.addPrescription(<span class="st">&#39;grimpex&#39;</span>)
+            <span class="co"># finally run the simulation for another 150 generations</span>
+            <span class="co"># and store the final total virus population size</span>
+            <span class="kw">for</span> _ in <span class="dt">range</span>(<span class="dv">150-1</span>):
+                p.update()
+                <span class="co">#p.getResistPop( resistances.keys() )</span>
+            virusTotalPop.setdefault(delay, []).append( p.update() )
+    <span class="co"># create histograms</span>
+    <span class="ch">import</span> numpy <span class="ch">as</span> np
+    <span class="kw">for</span> delay in delays:
+        v = np.array(virusTotalPop[delay])
+        avg = <span class="dt">sum</span>(v)/<span class="dt">float</span>(<span class="dt">len</span>(v))
+        var = <span class="dt">sum</span>( (v - avg)**<span class="dv">2</span> )/<span class="dt">float</span>(<span class="dt">len</span>(v))
+        <span class="dt">print</span> <span class="st">&quot;The variance of the final virus populations for delay </span><span class="ot">%d</span><span class="st"> is </span><span class="ot">%.1f</span><span class="st">.&quot;</span> % (delay, var)</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python">simulationTwoDrugsDelayedTreatment(numTrials=<span class="dv">100</span>)</code></pre>
+<pre><code>The variance of the final virus populations for delay 300 is 10131.6.
+The variance of the final virus populations for delay 150 is 22719.3.
+The variance of the final virus populations for delay 75 is 44788.6.
+The variance of the final virus populations for delay 0 is 13109.1.</code></pre>
+<p>A delay of 300 generations before the second drug administration has the lowest variance in final virus population, closely followed by the variance for no delay, which is not surprising given that most patients get fully cured (no viruses left).</p>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="ch">import</span> numpy <span class="ch">as</span> np
+l = [<span class="dv">10</span>, <span class="dv">4</span>, <span class="dv">38</span>, <span class="dv">444</span>]
+l = np.array(l)</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python">l &gt; <span class="dv">10</span></code></pre>
+<pre><code>array([False, False,  True,  True], dtype=bool)</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="dt">sum</span>(l &gt; <span class="dv">10</span>)</code></pre>
+<pre><code>2</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="dt">print</span> inspect.getsource(VIRUS.TreatedPatient)</code></pre>
+<pre><code>class TreatedPatient(Patient):
+    &quot;&quot;&quot; 
+    Representation of a patient. The patient is able to take drugs and his/her
+    virus population can acquire resistance to the drugs he/she takes.
+    &quot;&quot;&quot;
+
+    def __init__(self, viruses, maxPop):
+        &quot;&quot;&quot; 
+        Initialization function, saves the viruses and maxPop parameters as
+        attributes. Also initializes the list of drugs being administered
+        (which should initially include no drugs).              
+
+        viruses: The list representing the virus population (a list of
+        virus instances)
+
+        maxPop: The  maximum virus population for this patient (an integer)
+        &quot;&quot;&quot;
+        Patient.__init__(self, viruses, maxPop)
+        self.drugs = set()
+
+
+    def addPrescription(self, newDrug):
+        &quot;&quot;&quot; 
+        Administer a drug to this patient. After a prescription is added, the
+        drug acts on the virus population for all subsequent time steps. If the
+        newDrug is already prescribed to this patient, the method has no effect.
+
+        newDrug: The name of the drug to administer to the patient (a string).
+
+        postcondition: The list of drugs being administered to a patient is updated
+        &quot;&quot;&quot;
+        self.drugs.add(newDrug)
+        
+        
+    def getPrescriptions(self):
+        &quot;&quot;&quot; 
+        Returns the drugs that are being administered to this patient.
+
+        returns: The list of drug names (strings) being administered to this
+        patient.
+        &quot;&quot;&quot;
+        return self.drugs
+
+
+    def getResistPop(self, drugResist):
+        &quot;&quot;&quot; 
+        Get the population of virus particles resistant to the drugs listed in
+        drugResist.       
+
+        drugResist: Which drug resistances to include in the population (a list
+        of strings - e.g. [&#39;guttagonol&#39;] or [&#39;guttagonol&#39;, &#39;srinol&#39;])
+
+        returns: The population of viruses (an integer) with resistances to all
+        drugs in the drugResist list.
+        &quot;&quot;&quot;
+        if len(drugResist) == 0: return 0
+        count = 0
+        for v in self.viruses:
+            resistAll = True
+            for d in drugResist:
+                if not v.isResistantTo(d):
+                    resistAll = False
+                    break
+            if resistAll:
+                count += 1
+        return count
+        
+    def update(self):
+        &quot;&quot;&quot; 
+        Update the state of the virus population in this patient for a single
+        time step. update() should execute these actions in order:
+
+        - Determine whether each virus particle survives and update the list of
+          virus particles accordingly
+
+        - The current population density is calculated. This population density
+          value is used until the next call to update().
+
+        - Based on this value of population density, determine whether each 
+          virus particle should reproduce and add offspring virus particles to 
+          the list of viruses in this patient.
+          The list of drugs being administered should be accounted for in the
+          determination of whether each virus particle reproduces.
+
+        returns: The total virus population at the end of the update (an
+        integer)
+        &quot;&quot;&quot;
+        self.surviving = []
+        for v in self.viruses:
+            if not v.doesClear():
+                self.surviving.append(v)
+        self.viruses = self.surviving
+        
+        self.popDensity = self.getTotalPop() / float(self.maxPop)
+        
+        self.new_viruses = []
+        for v in self.viruses:
+            try:
+                self.new_viruses.append( v.reproduce(self.popDensity, self.drugs) )
+            except NoChildException:
+                continue
+        self.viruses.extend(self.new_viruses)
+        
+        return self.getTotalPop()</code></pre>
+<pre class="sourceCode python"><code class="sourceCode python"></code></pre>
+        </div>
+      </div>
+      </article>
+      <div class="footer">
+        <a class="label swc-blue-bg" href="http://software-carpentry.org">Software Carpentry</a>
+        <a class="label swc-blue-bg" href="https://github.com/claudiuskerth/Unix-for-Bioinformatics-Tutorial">Source</a>
+        <a class="label swc-blue-bg" href="mailto:admin@software-carpentry.org">Contact</a>
+        <a class="label swc-blue-bg" href="LICENSE.html">License</a>
+      </div>
+    </div>
+    <!-- Javascript placed at the end of the document so the pages load faster -->
+    <script src="http://software-carpentry.org/v5/js/jquery-1.9.1.min.js"></script>
+    <script src="css/bootstrap/bootstrap-js/bootstrap.js"></script>
+    <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+  </body>
+</html>
